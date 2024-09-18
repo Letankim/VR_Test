@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bảo tàng lịch sử Việt Nam - Thực tế ảo</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #000;
+      }
+
+      #close-video-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: red;
+        color: white;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        display: none; /* Ẩn nút ban đầu */
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Button outside the canvas for closing video -->
+    <button id="close-video-button">Đóng Video</button>
+
+    <a-scene>
+      <!-- Camera with raycaster for interaction -->
+      <a-camera position="0 1.6 0" wasd-controls-enabled="true" look-controls>
+        <a-cursor color="#FF0000"></a-cursor>
+      </a-camera>
+
+      <!-- Lighting -->
+      <a-light
+        id="ambient-light"
+        type="ambient"
+        color="#FFFFFF"
+        intensity="0.2"
+      ></a-light>
+      <a-light
+        id="directional-light"
+        type="directional"
+        color="#FFFFFF"
+        intensity="0.3"
+        position="1 3 1"
+      ></a-light>
+      <a-light
+        id="spot-light"
+        type="spot"
+        color="#FFFFFF"
+        intensity="2"
+        position="0 4 -5"
+        target="#video-screen"
+        angle="30"
+        penumbra="1"
+      ></a-light>
+
+      <!-- Battle of Bạch Đằng 938 -->
+      <a-box
+        id="bach-dang"
+        position="-2 1 -3"
+        width="1"
+        height="1"
+        depth="1"
+        color="#4CAF50"
+        class="clickable"
+      ></a-box>
+      <a-text
+        value="Trận Bạch Đằng 938"
+        position="-2 2 -3"
+        width="4"
+        color="#FFF"
+      ></a-text>
+
+      <!-- Battle of Tây Sơn -->
+      <a-box
+        id="tay-son"
+        position="2 1 -3"
+        width="1"
+        height="1"
+        depth="1"
+        color="#FF5722"
+        class="clickable"
+      ></a-box>
+      <a-text
+        value="Trận Tây Sơn"
+        position="2 2 -3"
+        width="4"
+        color="#FFF"
+      ></a-text>
+
+      <!-- Background map -->
+      <a-plane
+        id="map-background"
+        position="0 0 -10"
+        rotation="-90 0 0"
+        width="30"
+        height="30"
+        src="url(https://bachdanggiang.vn/wp-content/uploads/2020/01/chienthangbachdang938.png)"
+      ></a-plane>
+
+      <!-- Video Surface (Larger) -->
+      <a-plane
+        id="video-screen"
+        position="0 10 -15"
+        width="30"
+        height="20"
+        visible="false"
+      ></a-plane>
+
+      <!-- Sky -->
+      <a-sky color="#ECECEC"></a-sky>
+    </a-scene>
+
+    <script>
+      let currentVideoURL = "";
+
+      document
+        .querySelector("#bach-dang")
+        .addEventListener("click", function () {
+          showVideo("./video/bachdang.mp4");
+        });
+
+      document.querySelector("#tay-son").addEventListener("click", function () {
+        showVideo("./video/tayson.mp4");
+      });
+
+      document
+        .querySelector("#close-video-button")
+        .addEventListener("click", function () {
+          closeVideo();
+        });
+
+      function showVideo(videoURL) {
+        const videoScreen = document.querySelector("#video-screen");
+        const closeButton = document.querySelector("#close-video-button");
+        const ambientLight = document.querySelector("#ambient-light");
+        const directionalLight = document.querySelector("#directional-light");
+        const spotLight = document.querySelector("#spot-light");
+
+        if (currentVideoURL && currentVideoURL !== videoURL) {
+          videoScreen.setAttribute("visible", "false");
+        }
+
+        videoScreen.setAttribute("material", {
+          src: videoURL,
+          shader: "flat",
+        });
+        videoScreen.setAttribute("visible", "true");
+        closeButton.style.display = "block"; // Hiển thị nút đóng video
+
+        ambientLight.setAttribute("intensity", "0.1");
+        directionalLight.setAttribute("intensity", "0.1");
+        spotLight.setAttribute("intensity", "2");
+
+        currentVideoURL = videoURL;
+      }
+
+      function closeVideo() {
+        const videoScreen = document.querySelector("#video-screen");
+        const closeButton = document.querySelector("#close-video-button");
+        const ambientLight = document.querySelector("#ambient-light");
+        const directionalLight = document.querySelector("#directional-light");
+        const spotLight = document.querySelector("#spot-light");
+
+        videoScreen.setAttribute("visible", "false");
+        closeButton.style.display = "none"; // Ẩn nút đóng video
+
+        ambientLight.setAttribute("intensity", "0.2");
+        directionalLight.setAttribute("intensity", "0.3");
+        spotLight.setAttribute("intensity", "0");
+      }
+    </script>
+  </body>
+</html>
